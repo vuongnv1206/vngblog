@@ -15,15 +15,21 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
 
-
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+
+		<PackageReference Include="AutoMapper" Version="12.0.1" />
+		<PackageReference Include="MailKit" Version="4.3.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\VngBLog.Application\VngBLog.Application.csproj" />
 	  <ProjectReference Include="..\VngBlog.Domain\VngBlog.Domain.csproj" />
 	</ItemGroup>
 </Project>

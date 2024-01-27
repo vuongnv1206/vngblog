@@ -1,3 +1,5 @@
+using VngBlog.Api;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,5 +23,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
+//Seeding data
+app.MigrateDatabase();
 app.Run();
