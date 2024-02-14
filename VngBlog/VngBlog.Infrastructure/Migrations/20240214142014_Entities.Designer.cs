@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VngBlog.Infrastructure.EntityFrameworkCore;
 
@@ -11,9 +12,11 @@ using VngBlog.Infrastructure.EntityFrameworkCore;
 namespace VngBlog.Infrastructure.Migrations
 {
     [DbContext(typeof(VngBlogDbContext))]
-    partial class VngBlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240214142014_Entities")]
+    partial class Entities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

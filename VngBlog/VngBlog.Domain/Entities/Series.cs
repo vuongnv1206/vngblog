@@ -19,6 +19,7 @@ namespace VngBlog.Domain.Entities.Systems
         public string? Image { set; get; }
         public string? Content { get; set; }
 
-        public virtual ICollection<Post> Posts { get; set; }
+        public virtual ICollection<PostInSeries> PostInSeries { get; set; }
+
     }
 }

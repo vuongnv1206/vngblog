@@ -23,14 +23,12 @@ namespace VngBlog.Domain.Entities.Systems
         public int ViewCount { get; set; }
         public PostStatus Status { get; set; }
 
-        public int? SeriesId { get; set; }
-        [ForeignKey(nameof(SeriesId))]
-        public virtual Series Series { get; set; }
         [ForeignKey(nameof(CategoryId))]
         public virtual PostCategory Category { get; set; }
 
 
-        public virtual ICollection<Tag> Tags { get; set; }
+        public virtual ICollection<PostInSeries> PostInSeries { get; set; }
+        public virtual ICollection<PostTag> PostTags { get; set; }
         public virtual ICollection<PostComment> PostComments { get; set; }
         public virtual ICollection<PostActivityLog> PostActivityLogs { get; set; }
 
