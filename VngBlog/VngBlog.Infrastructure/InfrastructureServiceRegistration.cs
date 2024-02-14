@@ -17,15 +17,25 @@ namespace VngBlog.Infrastructure
 	{
 		public static IServiceCollection ConfigureInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
 		{
-
 			services.AddDbContext<VngBlogDbContext>(options =>
-			options.UseSqlServer(configuration.GetConnectionString("Default")));
+			{
+				options.UseSqlServer(configuration.GetConnectionString("Default"),
+					builder => builder.MigrationsAssembly(typeof(VngBlogDbContext).Assembly.FullName)
+					);
+			});
+			//services.AddDbContext<VngBlogDbContext>(options =>
+			//options.UseSqlServer(configuration.GetConnectionString("Default")));
+
+			//Register services
+			services
+				.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
+				//.AddScoped<ICustomerService, CustomerService>();
 
 			services.Configure<SMTPEmailSettings>(configuration.GetSection("SMTPEmailSettings"));
-
-			services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
-			services.AddScoped(typeof(IEmailService), typeof(SmtpEmailService));
-
+			services.AddScoped<SMTPEmailSettings>();
+			services.AddScoped<IUnitOfWork,UnitOfWork>();
+			services.AddScoped<IEmailService, SmtpEmailService>();
+			services.AddTransient<ISerializeService, SerializeService>();
 			return services;
 
 		}

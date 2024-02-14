@@ -1,8 +1,14 @@
 using VngBlog.Api;
+using VngBlog.Application;
+using VngBlog.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.ConfigureApplicationServices(builder.Configuration);
+builder.Services.ConfigureIdentityServices(builder.Configuration);
+builder.Services.ConfigureInfrastructureServices(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -19,7 +25,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
