@@ -8,12 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VngBlog.Domain.Systems;
+using VngBlog.Domain.Entities.Systems;
 using VngBlog.Infrastructure.EntityFrameworkCore;
 
 namespace VngBlog.Infrastructure
 {
-	public static class IdentityServiceRegistration
+    public static class IdentityServiceRegistration
 	{
 		public static IServiceCollection ConfigureIdentityServices(this IServiceCollection services, IConfiguration configuration)
 		{

@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using VngBlog.Domain.Exceptions;
 using VngBLog.Application.Common;
+using static VngBLog.Application.Common.ValidationException;
 
 namespace VngBlog.Api.Middlewares;
 
@@ -54,7 +55,32 @@ internal sealed class ExceptionHandlingMiddleware : IMiddleware
         };
 
 
+    private static IReadOnlyCollection<ValidationError> GetErrors(Exception exception)
+    {
+        //IReadOnlyCollection<ValidationError> errors = null;
 
-    
+        //if (exception is ValidationException validationException)
+        //{
+        //    errors = validationException.Errors;
+        //}
+
+        //return errors;
+
+        var errors = new List<ValidationError>();
+
+        if (exception is ValidationException validationException)
+        {
+            foreach (var error in validationException.Errors)
+            {
+                foreach (var errorMessage in error.Value)
+                {
+                    errors.Add(new ValidationError(error.Key, errorMessage));
+                }
+            }
+        }
+
+        return errors;
+    }
+
 
 }

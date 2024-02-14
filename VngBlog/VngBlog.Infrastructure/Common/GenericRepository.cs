@@ -1,14 +1,12 @@
-﻿
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Tls;
 using VngBlog.Contract.Common;
-using VngBlog.Contract.Domains;
+using VngBlog.Domain.Abstractions;
 using VngBlog.Infrastructure.EntityFrameworkCore;
 
 namespace VngBlog.Infrastructure.Common
 {
-	public class GenericRepository<T, K> : IGenericRepository<T, K> where T : EntityBase<K>
+    public class GenericRepository<T, K> : IGenericRepository<T, K> where T : EntityBase<K>
 	{
 		private readonly VngBlogDbContext _dbContext;
 		private readonly IUnitOfWork _unitOfWork;
