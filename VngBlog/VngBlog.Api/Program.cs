@@ -1,4 +1,5 @@
 using VngBlog.Api;
+using VngBlog.Api.Middlewares;
 using VngBlog.Application;
 using VngBlog.Infrastructure;
 
@@ -16,7 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

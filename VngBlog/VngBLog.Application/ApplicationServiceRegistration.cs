@@ -1,11 +1,9 @@
 ﻿
 using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 using System.Reflection;
-using VngBLog.Application.Common.Behaviors;
+
 
 namespace VngBlog.Application
 {
@@ -16,10 +14,7 @@ namespace VngBlog.Application
 		{
 			services.AddAutoMapper(Assembly.GetExecutingAssembly())
 				.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
-				.AddMediatR(Assembly.GetExecutingAssembly())
-				.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehavior<,>))
-				.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>))
-				.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>))
+
 				;
 
 
