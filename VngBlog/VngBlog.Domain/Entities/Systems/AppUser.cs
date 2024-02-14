@@ -12,6 +12,7 @@ namespace VngBlog.Domain.Entities.Systems
         public DateTime DateCreated { get; set; }
         public DateTime? Dob { get; set; }
         public string? Avatar { get; set; }
+        public virtual ICollection<Post> Posts { get; set; }
 
     }
 }

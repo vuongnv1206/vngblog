@@ -18,7 +18,6 @@ namespace VngBlog.Infrastructure.EntityFrameworkCore
 		public DbSet<PostActivityLog> PostActivityLogs { get; set; }
 		public DbSet<Series> Series { get; set; }
 		public DbSet<PostInSeries> PostInSeries { get; set; }
-		public DbSet<PostLike> PostLikes { get; set; }
 		public DbSet<PostComment> PostComments { get; set; }
 		public VngBlogDbContext(DbContextOptions<VngBlogDbContext> options) : base(options)
 		{

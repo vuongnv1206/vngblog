@@ -11,27 +11,37 @@ namespace VngBlog.Domain.Entities.Systems
         public required string Name { get; set; }
         public required string Slug { get; set; }
         public string? Description { get; set; }
-
-        public Guid CategoryId { get; set; }
+        public string? AuthorId { get; set; }
+        [ForeignKey(nameof(AuthorId))]
+        public virtual AppUser Author { get; set; }
+        public int CategoryId { get; set; }
         public string? Image { get; set; }
         public string? Content { get; set; }
         public string? Source { get; set; }
 
-        public string? Tags { get; set; }
-
+        public string? EntryTag { get; set; }
         public int ViewCount { get; set; }
         public PostStatus Status { get; set; }
+
+        public int? SeriesId { get; set; }
+        [ForeignKey(nameof(SeriesId))]
+        public virtual Series Series { get; set; }
         [ForeignKey(nameof(CategoryId))]
         public virtual PostCategory Category { get; set; }
+
+
+        public virtual ICollection<Tag> Tags { get; set; }
+        public virtual ICollection<PostComment> PostComments { get; set; }
+        public virtual ICollection<PostActivityLog> PostActivityLogs { get; set; }
 
 
     }
 
     public enum PostStatus
     {
-        Draft = 1,
-        WaitingForApproval = 2,
-        Rejected = 3,
-        Published = 4
+        WaitingForApproval = 1,
+        Rejected = 2,
+        Published = 3,
+        Draft = 4
     }
 }
