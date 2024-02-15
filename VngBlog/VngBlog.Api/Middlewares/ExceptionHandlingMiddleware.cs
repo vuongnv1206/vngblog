@@ -5,7 +5,7 @@ using static VngBLog.Application.Common.ValidationException;
 
 namespace VngBlog.Api.Middlewares;
 
-internal sealed class ExceptionHandlingMiddleware : IMiddleware
+public class ExceptionHandlingMiddleware : IMiddleware
 {
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
