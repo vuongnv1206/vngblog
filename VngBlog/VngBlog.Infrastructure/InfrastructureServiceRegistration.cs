@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -31,10 +32,10 @@ namespace VngBlog.Infrastructure
 				.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 				//.AddScoped<ICustomerService, CustomerService>();
 
-			services.Configure<SMTPEmailSettings>(configuration.GetSection("SMTPEmailSettings"));
-			services.AddScoped<SMTPEmailSettings>();
+			services.Configure<EmailConfiguration>(configuration.GetSection("EmailConfiguration"));
+			services.AddScoped<EmailConfiguration>();
 			services.AddScoped<IUnitOfWork,UnitOfWork>();
-			services.AddScoped<IEmailService, SmtpEmailService>();
+			services.AddScoped<IEmailSender, SendMailService>();
 			services.AddTransient<ISerializeService, SerializeService>();
 			return services;
 
