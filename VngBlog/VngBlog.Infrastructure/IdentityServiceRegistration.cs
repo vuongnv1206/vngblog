@@ -20,6 +20,7 @@ namespace VngBlog.Infrastructure
 
 			services.AddIdentity<AppUser,IdentityRole>()
 				.AddEntityFrameworkStores<VngBlogDbContext>()
+				.AddDefaultUI()
 				.AddDefaultTokenProviders();
 			//Add config for required Email
 			services.Configure<IdentityOptions>(options => options.SignIn.RequireConfirmedEmail = false);

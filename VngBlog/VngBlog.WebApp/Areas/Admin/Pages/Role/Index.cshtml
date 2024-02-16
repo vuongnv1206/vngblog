@@ -1,0 +1,32 @@
+@page
+@model VngBlog.WebApp.Areas.Admin.Pages.Role.IndexModel
+@{
+    ViewData["Title"] = "Danh sách các role";
+}
+<h2>@ViewData["Title"]</h2>
+
+<partial name="_StatusMessage" model="@Model.StatusMessage"></partial>
+
+
+<div class="mb-2">
+    <a class="btn btn-secondary" asp-page="./Create">Add new role</a>
+    <a class="btn btn-secondary" asp-page="../User/Index">User Manager</a>
+</div>
+
+<table class="table">
+    <tr>
+        <th>Tên Role (vai trò)</th>
+        <th>Tác vụ</th>
+    </tr>
+    @foreach (var role in Model.Roles)
+    {
+        <tr>
+            <td>@role.Name</td>
+            <td>
+                <a class="btn btn-success btn-sm" asp-page="./Edit" asp-route-roleid="@role.Id">Update</a>
+                <a class="btn btn-success btn-sm" asp-page="./Delete" asp-route-roleid="@role.Id">Delete</a>
+                <a class="btn btn-success btn-sm" asp-page="./Permission" asp-route-roleid="@role.Id">Permission</a>
+            </td>
+        </tr>
+    }
+</table>

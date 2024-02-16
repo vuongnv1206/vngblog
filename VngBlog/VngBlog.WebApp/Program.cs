@@ -11,6 +11,17 @@ builder.Services.ConfigureIdentityServices(builder.Configuration);
 builder.Services.ConfigureInfrastructureServices(builder.Configuration);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services.AddAuthentication().AddGoogle(options =>
+{
+    IConfigurationSection authenticationSection = builder.Configuration.GetSection("Authentication");
+    string googleClientId = authenticationSection["Google:ClientId"];
+    string googleClientSecret = authenticationSection["Google:ClientSecret"];
+    options.ClientId = googleClientId;
+    options.ClientSecret = googleClientSecret;
+    //options.CallbackPath = "/Auth/Signin-google";
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
