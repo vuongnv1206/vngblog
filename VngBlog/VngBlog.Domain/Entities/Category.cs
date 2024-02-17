@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using VngBlog.Domain.Abstractions;
+using System.ComponentModel;
 
 namespace VngBlog.Domain.Entities.Systems
 {
@@ -10,13 +11,14 @@ namespace VngBlog.Domain.Entities.Systems
     {
         [MaxLength(250)]
         public required string Name { set; get; }
-        public  string? Slug { set; get; }
+        public string? Slug { set; get; }
+        [DisplayName("CategoryParent")]
         public int? ParentId { set; get; }
-        public bool? IsActive { set; get; }
+        public bool IsActive { set; get; }
         [ForeignKey(nameof(ParentId))]
-        public virtual Category CategoryParent { get; set; }
+        public virtual Category? CategoryParent { get; set; }
         // Các Category con
-        public ICollection<Category> CategoryChildren { get; set; }
+        public ICollection<Category>? CategoryChildren { get; set; }
 
         public void ChildCategoryIds(ICollection<Category> childcates, List<int> lists)
         {
