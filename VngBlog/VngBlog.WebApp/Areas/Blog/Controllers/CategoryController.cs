@@ -24,12 +24,15 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
         // GET: Blog/Category
         public async Task<IActionResult> Index()
         {
-            var query = _context.Categories
-                .Include(c => c.CategoryParent)
-                .Include(c => c.CategoryChildren)
-                .Where(c => c.CategoryParent == null);
+            var allCategories = await _context.Categories
+         .Include(c => c.CategoryParent)
+         .Include(c => c.CategoryChildren)
+         .ToListAsync();
 
-            return View(await query.ToListAsync());
+            // Lọc ra các categories không có parent (cấp cao nhất)
+            var topLevelCategories = allCategories.Where(c => c.CategoryParent == null).ToList();
+
+            return View(topLevelCategories);
         }
 
         // GET: Blog/Category/Details/5
@@ -54,12 +57,16 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
         // GET: Blog/Category/Create
         public async Task<IActionResult> CreateAsync()
         {
-            var categories = await _context.Categories
-               .Include(c => c.CategoryParent)
-               .Include(c => c.CategoryChildren)
-               .Where(c => c.CategoryParent == null)
-               .ToListAsync();
-            categories.Insert(0, new Category()
+            var allCategories = await _context.Categories
+        .Include(c => c.CategoryParent)
+        .Include(c => c.CategoryChildren)
+        .ToListAsync();
+
+            // Lọc ra các categories không có parent (cấp cao nhất)
+            var topLevelCategories = allCategories.Where(c => c.CategoryParent == null).ToList();
+
+       
+            topLevelCategories.Insert(0, new Category()
             {
                 Id = -1,
                 Name = "Không có danh muc cha",
@@ -67,7 +74,7 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
             });
 
             var items = new List<Category>();
-            CreateSelectItems(categories, items, 0);
+            CreateSelectItems(topLevelCategories, items, 0);
 
             ViewData["ParentId"] = new SelectList(items, "Id", "Name");
             return View();
@@ -96,12 +103,15 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var categories = await _context.Categories
-              .Include(c => c.CategoryParent)
-              .Include(c => c.CategoryChildren)
-              .Where(c => c.CategoryParent == null).ToListAsync();
+            var allCategories = await _context.Categories
+       .Include(c => c.CategoryParent)
+       .Include(c => c.CategoryChildren)
+       .ToListAsync();
 
-            categories.Insert(0, new Category()
+            // Lọc ra các categories không có parent (cấp cao nhất)
+            var topLevelCategories = allCategories.Where(c => c.CategoryParent == null).ToList();
+
+            topLevelCategories.Insert(0, new Category()
             {
                 Id = -1,
                 Name = "Không có danh mục cha",
@@ -109,7 +119,7 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
             });
 
             var items = new List<Category>();
-            CreateSelectItems(categories, items, 0);
+            CreateSelectItems(topLevelCategories, items, 0);
 
             ViewData["ParentId"] = new SelectList(items, "Id", "Name");
             
@@ -149,12 +159,15 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                 return NotFound();
             }
 
-            var categories = await _context.Categories
-            .Include(c => c.CategoryParent)
-            .Include(c => c.CategoryChildren)
-            .Where(c => c.CategoryParent == null).ToListAsync();
+            var allCategories = await _context.Categories
+        .Include(c => c.CategoryParent)
+        .Include(c => c.CategoryChildren)
+        .ToListAsync();
 
-            categories.Insert(0, new Category()
+            // Lọc ra các categories không có parent (cấp cao nhất)
+            var topLevelCategories = allCategories.Where(c => c.CategoryParent == null).ToList();
+
+            topLevelCategories.Insert(0, new Category()
             {
                 Id = -1,
                 Name = "Không có danh mục cha",
@@ -162,7 +175,7 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
             });
 
             var items = new List<Category>();
-            CreateSelectItems(categories, items, 0);
+            CreateSelectItems(topLevelCategories, items, 0);
 
             ViewData["ParentId"] = new SelectList(items, "Id", "Name");
 
@@ -187,6 +200,40 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                 canUpdate = false;
             }
 
+            // Kiem tra thiet lap muc cha phu hop
+            if (canUpdate && category.ParentId != null)
+            {
+
+                var childCates = await _context.Categories
+                            .Include(c => c.CategoryChildren)
+                             .Where(c => c.ParentId == category.Id)
+                             .ToListAsync();
+               
+
+
+                // Func check Id 
+                Func<List<Category>, bool> checkCateIds = null;
+                checkCateIds = (cates) =>
+                {
+                    foreach (var cate in cates)
+                    {
+                        Console.WriteLine(cate.Name);
+                        if (cate.Id == category.ParentId)
+                        {
+                            canUpdate = false;
+                            ModelState.AddModelError(string.Empty, "Phải chọn danh mục cha khácXX");
+                            return true;
+                        }
+                        if (cate.CategoryChildren != null)
+                            return checkCateIds(cate.CategoryChildren.ToList());
+
+                    }
+                    return false;
+                };
+                // End Func 
+                checkCateIds(childCates.ToList());
+            }
+
             if (ModelState.IsValid && category.ParentId != category.Id)
             {
                 try
@@ -209,12 +256,15 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var categories = await _context.Categories
-            .Include(c => c.CategoryParent)
-            .Include(c => c.CategoryChildren)
-            .Where(c => c.CategoryParent == null).ToListAsync();
+            var allCategories = await _context.Categories
+       .Include(c => c.CategoryParent)
+       .Include(c => c.CategoryChildren)
+       .ToListAsync();
 
-            categories.Insert(0, new Category()
+            // Lọc ra các categories không có parent (cấp cao nhất)
+            var topLevelCategories = allCategories.Where(c => c.CategoryParent == null).ToList();
+
+            topLevelCategories.Insert(0, new Category()
             {
                 Id = -1,
                 Name = "Không có danh mục cha",
@@ -222,7 +272,7 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
             });
 
             var items = new List<Category>();
-            CreateSelectItems(categories, items, 0);
+            CreateSelectItems(topLevelCategories, items, 0);
 
             ViewData["ParentId"] = new SelectList(items, "Id", "Name");
 
