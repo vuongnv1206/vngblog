@@ -10,7 +10,7 @@ using VngBlog.Domain.Entities.Systems;
 
 namespace VngBlog.Contract.Repositories
 {
-    public interface IPostCategoryRepository : IGenericRepository<PostCategory, int>
+    public interface IPostCategoryRepository : IGenericRepository<Category, int>
     {
         Task<PagedList<PostCategoryDto>> GetAllPaging(string? keyword, int pageIndex = 1, int pageSize = 10);
         Task<bool> HasPost(Guid categoryId);

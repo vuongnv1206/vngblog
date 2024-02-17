@@ -1,20 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using VngBlog.Domain.Abstractions;
+using VngBlog.Domain.Entities.Systems;
 
-namespace VngBlog.Domain.Entities.Systems
+namespace VngBlog.Domain.Entities
 {
-    [Index(nameof(Slug), IsUnique = true)]
-    public class PostCategory : EntityAuditBase<int>
+    public class PostCategory : EntityBase<int>
     {
-        [MaxLength(250)]
-        public required string Name { set; get; }
-        public  string? Slug { set; get; }
-        public int? ParentId { set; get; }
-        public bool? IsActive { set; get; }
-        [ForeignKey(nameof(ParentId))]
-        public virtual PostCategory Parent { get; set; }
-
+        public int PostId { get; set; }
+        public int CategoryId { get; set; }
+        [ForeignKey(nameof(PostId))]
+        public virtual Post Post { get; set; }
+        [ForeignKey(nameof(CategoryId))]
+        public virtual Category Category { get; set; }
     }
 }

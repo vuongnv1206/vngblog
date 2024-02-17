@@ -14,7 +14,6 @@ namespace VngBlog.Domain.Entities.Systems
         public string? AuthorId { get; set; }
         [ForeignKey(nameof(AuthorId))]
         public virtual AppUser Author { get; set; }
-        public int CategoryId { get; set; }
         public string? Image { get; set; }
         public string? Content { get; set; }
         public string? Source { get; set; }
@@ -23,8 +22,7 @@ namespace VngBlog.Domain.Entities.Systems
         public int ViewCount { get; set; }
         public PostStatus Status { get; set; }
 
-        [ForeignKey(nameof(CategoryId))]
-        public virtual PostCategory Category { get; set; }
+        public virtual ICollection<PostCategory> PostCategories { get; set; }
 
 
         public virtual ICollection<PostInSeries> PostInSeries { get; set; }

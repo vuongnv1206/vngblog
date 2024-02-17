@@ -15,6 +15,6 @@ namespace VngBlog.Contract.Shared.Dtos.Categories
         public string Slug { set; get; }
         public int? ParentId { set; get; }
         public bool? IsActive { set; get; }
-        public PostCategory Parent { get; set; }
+        public Category Parent { get; set; }
     }
 }
