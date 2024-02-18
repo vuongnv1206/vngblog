@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using VngBlog.Infrastructure;
 using VngBlog.Infrastructure.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
@@ -34,9 +35,16 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(),"Uploads")),  //1 đg đãn bởi đg dẫn hiện tại đến thư mục Uploads
+    RequestPath = "/contents"   //Địa chỉ tùy chúng ta thiết lập 
+    // /contents/1.jpg => Uploads/1.jpg
+});
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
