@@ -25,13 +25,13 @@ namespace VngBlog.Domain.Entities.Systems
         public PostStatus Status { get; set; }
         public string? Note { get; set; }
 
-        public virtual ICollection<PostCategory> PostCategories { get; set; } = new HashSet<PostCategory>();
+        public virtual ICollection<PostCategory>? PostCategories { get; set; }
 
 
-        public virtual ICollection<PostInSeries> PostInSeries { get; set; } = new HashSet<PostInSeries>();
-        public virtual ICollection<PostTag> PostTags { get; set; } = new HashSet<PostTag>();
-        public virtual ICollection<PostComment> PostComments { get; set; } = new HashSet<PostComment>();
-        public virtual ICollection<PostActivityLog> PostActivityLogs { get; set; } = new HashSet<PostActivityLog>();
+        public virtual ICollection<PostInSeries>? PostInSeries { get; set; } 
+        public virtual ICollection<PostTag>? PostTags { get; set; } 
+        public virtual ICollection<PostComment>? PostComments { get; set; }
+        public virtual ICollection<PostActivityLog>? PostActivityLogs { get; set; }
 
 
     }
