@@ -10,12 +10,12 @@ namespace VngBlog.Domain.Entities.Systems
     public class Post : EntityAuditBase<int>
     {
         public required string Name { get; set; }
-        public required string Slug { get; set; }
+        public string? Slug { get; set; }
         public string? Description { get; set; }
         [DisplayName("Author")]
         public string? AuthorId { get; set; }
         [ForeignKey(nameof(AuthorId))]
-        public virtual AppUser Author { get; set; }
+        public virtual AppUser? Author { get; set; }
         public string? Image { get; set; }
         public string? Content { get; set; }
         public string? Source { get; set; }
@@ -25,13 +25,13 @@ namespace VngBlog.Domain.Entities.Systems
         public PostStatus Status { get; set; }
         public string? Note { get; set; }
 
-        public virtual ICollection<PostCategory> PostCategories { get; set; }
+        public virtual ICollection<PostCategory> PostCategories { get; set; } = new HashSet<PostCategory>();
 
 
-        public virtual ICollection<PostInSeries> PostInSeries { get; set; }
-        public virtual ICollection<PostTag> PostTags { get; set; }
-        public virtual ICollection<PostComment> PostComments { get; set; }
-        public virtual ICollection<PostActivityLog> PostActivityLogs { get; set; }
+        public virtual ICollection<PostInSeries> PostInSeries { get; set; } = new HashSet<PostInSeries>();
+        public virtual ICollection<PostTag> PostTags { get; set; } = new HashSet<PostTag>();
+        public virtual ICollection<PostComment> PostComments { get; set; } = new HashSet<PostComment>();
+        public virtual ICollection<PostActivityLog> PostActivityLogs { get; set; } = new HashSet<PostActivityLog>();
 
 
     }

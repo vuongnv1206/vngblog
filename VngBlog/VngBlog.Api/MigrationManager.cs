@@ -14,7 +14,9 @@ namespace VngBlog.Api
 				{
 					context.Database.Migrate();
 					new SeedingDataIdentity().SeedData(context).Wait();
-				}
+					new SeedingDataPostCategory().SeedData(context).Wait();
+
+                }
 			}
 			return app;
 		}

@@ -24,9 +24,4 @@
     <ProjectReference Include="..\VngBlog.Api\VngBlog.Api.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\Blog\Data\" />
-    <Folder Include="Areas\Blog\Models\" />
-  </ItemGroup>
-
 </Project>
