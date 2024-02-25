@@ -20,7 +20,7 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
 
         // /post
         // /post/{categorySlug?}
-        [Route("/post/categorySlug?")]
+        [Route("/post/{categorySlug?}")]
         public IActionResult Index(string categorySlug)
         {
             var categories = GetCategories();
