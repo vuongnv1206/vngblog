@@ -76,5 +76,35 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                             .ToList();
             return categories;
         }
+
+        [Route("/post/{postslug}.html")]
+        public IActionResult Details(string postslug)
+        {
+            var categories = GetCategories();
+            ViewBag.categories = categories;
+
+            var post = _context.Posts.Where(p => p.Slug == postslug)
+                               .Include(p => p.Author)
+                               .Include(p => p.PostCategories)
+                               .ThenInclude(pc => pc.Category)
+                               .FirstOrDefault();
+
+            if (post == null)
+            {
+                return NotFound("Không thấy bài viết");
+            }
+
+            Category category = post.PostCategories.FirstOrDefault()?.Category;
+            ViewBag.category = category;
+
+            var otherPosts = _context.Posts.Where(p => p.PostCategories.Any(c => c.Category.Id == category.Id))
+                                            .Where(p => p.Id != post.Id)
+                                            .OrderByDescending(p => p.CreatedTime)
+                                            .Take(5);
+            ViewBag.otherPosts = otherPosts;
+
+            return View(post);
+        }
+
     }
 }

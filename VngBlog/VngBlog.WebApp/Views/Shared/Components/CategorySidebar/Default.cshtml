@@ -1,0 +1,43 @@
+﻿@using VngBlog.WebApp.Components
+@model VngBlog.WebApp.Components.CategorySidebar.CategorySidebarData
+@{
+    int level = Model.Level;
+}
+@if (Model.Categories.Count > 0)
+{
+    @if (level == 0)
+    {
+        @Html.Raw("<div class=\"categorysidebar\">")
+        ;
+        <h3>
+            <a asp-controller="ViewPost" asp-action="Index" asp-route-categorySlug="">
+                Tất cả chuyên mục
+            </a>
+        </h3>
+    }
+    <ul>
+        @foreach (var category in Model.Categories)
+        {
+            var cssActive = (category.Slug == Model.CategorySlug) ? "active" : null;
+            <li>
+                <a class="@cssActive" asp-controller="ViewPost" asp-action="Index" asp-route-categorySlug="@category.Slug">
+                    @category.Name
+                </a>
+                @if (category.CategoryChildren?.Count > 0)
+                {
+                    @await Component.InvokeAsync("VngBlog.WebApp.Components.CategorySidebar",
+                             new CategorySidebar.CategorySidebarData()
+                        {
+                            Categories = category.CategoryChildren.ToList(),
+                            Level = level + 1,
+                            CategorySlug = ViewBag.categoryslug
+                        })
+                }
+            </li>
+        }
+    </ul>
+    @if (level == 0)
+    {
+        @Html.Raw("</div>");
+    }
+}

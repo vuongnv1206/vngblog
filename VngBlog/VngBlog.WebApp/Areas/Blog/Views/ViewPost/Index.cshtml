@@ -1,1 +1,72 @@
-﻿
+﻿@model List<Post>
+@using VngBlog.Domain.Entities.Systems
+@using VngBlog.WebApp.Components
+@{
+    List<Category> categories = ViewBag.categories as List<Category>;
+    Category category = ViewBag.category as Category;
+    ViewData["Title"] = (category != null) ? category.Name :
+                        "Bài viết trong tất cả các danh mục";
+}
+
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="~/">Home</a></li>
+        @if (category != null)
+        {
+            var li = category.ListParents();
+            foreach (var l in li)
+            {
+                <li class="breadcrumb-item">
+                    <a asp-action="Index" asp-route-categorySlug="@l.Slug">@l.Name</a>
+                </li>
+            }
+        }
+    </ol>
+</nav>
+
+<h1>@ViewData["Title"]</h1>
+@if (category != null)
+{
+    <p>@category.Name</p>
+}
+else
+{
+    <p>Bài viết trong tất cả các danh mục ...</p>
+}
+<hr>
+
+@foreach (var post in Model)
+{
+    <div class="media border-bottom mb-3 pb-3">
+        <img src="/contents/nophoto.png" class="mr-3 w-25">
+        <div class="media-body">
+            <h5 class="mt-0">
+                <a asp-controller="ViewPost" asp-action="Details" asp-route-postslug="@post.Slug">
+                    @post.Name
+                </a>
+            </h5>
+            @post.Description
+            <div>
+                Chủ đề:
+                <strong class="text-danger">
+                    @post.PostCategories.FirstOrDefault()?.Category.Name
+                </strong>
+            </div>
+            <div class="author-row">
+                Tác giả: <strong>@post.Author.UserName</strong> |
+                Ngày cập nhật : <i>@post.LastModifiedTime.Value.ToString("dd/MM/yyyy")</i>
+            </div>
+        </div>
+    </div>
+}
+
+@section Sidebar {
+    @await Component.InvokeAsync("VngBlog.WebApp.Components.CategorySidebar",
+                new CategorySidebar.CategorySidebarData()
+        {
+            Categories = categories,
+            Level = 0,
+            CategorySlug = ViewBag.categoryslug
+        })
+}

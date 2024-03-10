@@ -1,5 +1,70 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Post
+@using VngBlog.WebApp.Components
+@using VngBlog.Domain.Entities.Systems
+
 @{
+    List<Category> categories = ViewBag.categories as List<Category>;
+    Category category = ViewBag.category as Category;
+    ViewData["Title"] = Model.Name;
+
+    IQueryable<Post> otherPosts = ViewBag.otherPosts as IQueryable<Post>;
 }
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="~/">Home</a></li>
+        @if (category != null)
+        {
+            var li = category.ListParents();
+            foreach (var l in li)
+            {
+                <li class="breadcrumb-item">
+                    <a asp-action="Index" asp-route-categoryslug="@l.Slug">@l.Name</a>
+                </li>
+            }
+            <li class="breadcrumb-item">
+                <a asp-action="Index" asp-route-categoryslug="@category.Slug">@category.Name</a>
+            </li>
+        }
+    </ol>
+</nav>
+
+<div class="detailpost">
+    <h1>@Model.Name</h1>
+    <div class="sapo">
+        @Model.Description
+    </div>
+    <div>
+        <i>Cập nhật: @Model.LastModifiedTime</i> /
+        Tác giả: <strong>@Model.Author.UserName</strong>
+    </div>
+    <hr>
+
+    @Html.Raw(Model.Content)
+
+</div>
+
+
+
+
+@section Sidebar {
+    @await Component.InvokeAsync("VngBlog.WebApp.Components.CategorySidebar",
+                        new CategorySidebar.CategorySidebarData()
+                {
+                    Categories = categories,
+                    Level = 0,
+                    CategorySlug = category.Slug
+                })
+
+    <ul class="list-group">
+        @foreach (var post in otherPosts)
+        {
+            <li class="list-group-item">
+                <a asp-controller="ViewPost" asp-action="Details" asp-route-postslug="@post.Slug">
+                    @post.Name
+                </a>
+            </li>
+        }
+    </ul>
+}
+
