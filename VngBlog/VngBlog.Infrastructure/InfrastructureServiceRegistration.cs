@@ -36,7 +36,7 @@ namespace VngBlog.Infrastructure
 			services.AddScoped<EmailConfiguration>();
 			services.AddScoped<IUnitOfWork,UnitOfWork>();
 			services.AddScoped<IEmailSender, SendMailService>();
-			services.AddTransient<ISerializeService, SerializeService>();
+	
 			return services;
 
 		}

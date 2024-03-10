@@ -14,7 +14,7 @@ namespace VngBlog.Contract.SeedWork
 
         //Properties
         public string OrderBy { get; set; }
-
+        public string SearchTerm { get; set; }
         public int PageNumber
         {
             get => _pageNumber;

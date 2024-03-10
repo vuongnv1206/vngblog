@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace VngBlog.Contract.SeedWork
 {
-    public class RequestParameters
+    public class PagingResponse<T> where T : class
     {
-        public string OrderBy { get; set; }
-        public string SearchTerm { get; set; }
+        public List<T> Items { get; set; }
+        public MetaData MetaData { get; set; }
     }
+
 }
