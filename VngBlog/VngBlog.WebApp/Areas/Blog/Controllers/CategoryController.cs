@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using VngBlog.Domain.Entities.Systems;
 using VngBlog.Infrastructure.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.Text;
+using VngBlog.Contract.Shared.Dtos.Categories;
+using AutoMapper;
 
 namespace VngBlog.WebApp.Areas.Blog.Controllers
 {
@@ -15,27 +15,34 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
     public class CategoryController : Controller
     {
         private readonly VngBlogDbContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IMapper _mapper;
 
-        public CategoryController(VngBlogDbContext context)
+        public CategoryController(VngBlogDbContext context, HttpClient httpClient, IMapper mapper)
         {
             _context = context;
+            _httpClient = httpClient;
+            _mapper = mapper;
         }
 
-        // GET: Blog/Category
         public async Task<IActionResult> Index()
         {
-            var allCategories = await _context.Categories
-         .Include(c => c.CategoryParent)
-         .Include(c => c.CategoryChildren)
-         .ToListAsync();
-
-            // Lọc ra các categories không có parent (cấp cao nhất)
-            var topLevelCategories = allCategories.Where(c => c.CategoryParent == null).ToList();
-
-            return View(topLevelCategories);
+            var response = await _httpClient.GetAsync("https://localhost:5001/api/Category");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var topLevelCategories = JsonConvert.DeserializeObject<List<Category>?>(content);
+                return View(topLevelCategories);
+            }
+            else
+            {
+                // Handle error
+                return View("Error");
+            }
         }
 
-        // GET: Blog/Category/Details/5
+
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,15 +50,18 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .Include(c => c.CategoryParent)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            var response = await _httpClient.GetAsync($"https://localhost:5001/api/Category/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                var content = await response.Content.ReadAsStringAsync();
+                var category = JsonConvert.DeserializeObject<Category>(content);
+                return View(category);
             }
-
-            return View(category);
+            else
+            {
+                // Handle error
+                return View("Error");
+            }
         }
 
         // GET: Blog/Category/Create
@@ -83,7 +93,6 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
         // POST: Blog/Category/Create
       
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Slug,ParentId,IsActive")] Category category)
         {
             if (!ModelState.IsValid)
@@ -93,16 +102,27 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                     Console.WriteLine(error.ErrorMessage);
                 }
             }
-
-
             if (ModelState.IsValid)
             {
                 if (category.ParentId == -1) category.ParentId = null;
-                _context.Add(category);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
 
+                var categoryDto = _mapper.Map<CreateUpdateCategoryDto>(category);
+                var jsonContent = JsonConvert.SerializeObject(categoryDto);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("https://localhost:5001/api/Category", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    // Handle error
+                    return View("Error");
+                }
+            }
+            #region
             var allCategories = await _context.Categories
        .Include(c => c.CategoryParent)
        .Include(c => c.CategoryChildren)
@@ -122,7 +142,7 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
             CreateSelectItems(topLevelCategories, items, 0);
 
             ViewData["ParentId"] = new SelectList(items, "Id", "Name");
-            
+            #endregion
             return View(category);
         }
 
@@ -185,7 +205,6 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
 
         // POST: Blog/Category/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Slug,ParentId,IsActive")]Category category)
         {
             if (id != category.Id)
@@ -239,8 +258,13 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                 try
                 {
                     if (category.ParentId == -1) category.ParentId = null;
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    //_context.Update(category);
+                    //await _context.SaveChangesAsync();
+                    var categoryDto = _mapper.Map<CreateUpdateCategoryDto>(category);
+                    var jsonContent = JsonConvert.SerializeObject(categoryDto);
+                    var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                    var response = await _httpClient.PutAsync($"https://localhost:5001/api/Category/{id}", content);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -300,23 +324,21 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
 
         // POST: Blog/Category/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories
-                .Include(x => x.CategoryChildren).FirstOrDefaultAsync(c => c.Id == id);
-            if (category != null)
-            {
-                _context.Categories.Remove(category);
-            }
-            foreach (var cCategory in category.CategoryChildren)
-            {
-                cCategory.ParentId = category.ParentId;
-            }
+            var response = await _httpClient.DeleteAsync($"https://localhost:5001/api/Category/{id}");
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                // Handle error
+                return View("Error");
+            }
         }
+
 
         private bool CategoryExists(int id)
         {

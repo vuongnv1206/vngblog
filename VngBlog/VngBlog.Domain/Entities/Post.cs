@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using VngBlog.Domain.Abstractions;
 
 namespace VngBlog.Domain.Entities.Systems
@@ -15,6 +16,7 @@ namespace VngBlog.Domain.Entities.Systems
         [DisplayName("Author")]
         public string? AuthorId { get; set; }
         [ForeignKey(nameof(AuthorId))]
+        [JsonIgnore]
         public virtual AppUser? Author { get; set; }
         public string? Image { get; set; }
         public string? Content { get; set; }
@@ -24,7 +26,6 @@ namespace VngBlog.Domain.Entities.Systems
         public int ViewCount { get; set; }
         public PostStatus Status { get; set; }
         public string? Note { get; set; }
-
         public virtual ICollection<PostCategory>? PostCategories { get; set; }
 
 

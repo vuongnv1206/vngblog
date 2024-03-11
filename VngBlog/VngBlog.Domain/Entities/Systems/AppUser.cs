@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 
 namespace VngBlog.Domain.Entities.Systems
@@ -12,6 +13,7 @@ namespace VngBlog.Domain.Entities.Systems
         public DateTime DateCreated { get; set; }
         public DateTime? Dob { get; set; }
         public string? Avatar { get; set; }
+
         public virtual ICollection<Post>? Posts { get; set; }
 
     }

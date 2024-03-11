@@ -1,6 +1,8 @@
+using System.Text.Json.Serialization;
 using VngBlog.Api;
 using VngBlog.Api.Middlewares;
 using VngBlog.Application;
+using VngBlog.Domain.Entities.Systems;
 using VngBlog.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +19,22 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+//builder.Services.AddControllersWithViews()
+//        .AddJsonOptions(options =>
+//        {
+//            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+//        });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Configure the HTTP request pipeline.
@@ -30,7 +47,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseCors("AllowAll");
 app.MapControllers();
 //Seeding data
 app.MigrateDatabase();

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
 using Elfie.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using VngBlog.Domain.Entities;
 using VngBlog.Domain.Entities.Systems;
 using VngBlog.Infrastructure.EntityFrameworkCore;
@@ -21,23 +24,31 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
     {
         private readonly VngBlogDbContext _context;
         private readonly UserManager<AppUser> _userManager;
-        public PostController(VngBlogDbContext context, UserManager<AppUser> userManager)
+        private readonly IMapper _mapper;
+        private readonly HttpClient _httpClient;
+        public PostController(VngBlogDbContext context, UserManager<AppUser> userManager,IMapper mapper, HttpClient httpClient)
         {
             _context = context;
             _userManager = userManager;
+            _mapper = mapper;
+            _httpClient = httpClient;
         }
 
         // GET: Blog/Post
         public async Task<IActionResult> Index()
         {
-            var data = await _context.Posts.Include(p => p.Author)
-                .Include(x => x.PostCategories).ThenInclude(x => x.Category)
-                .Include(x => x.PostTags).ThenInclude(x => x.Tag)
-                .OrderByDescending(x => x.CreatedTime)
-                .ToListAsync();
-
-            ViewBag.TotalPost = data.Count();
-            return View(data);
+            var response = await _httpClient.GetAsync("https://localhost:5001/api/Post");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<List<Post>?>(content);
+                ViewBag.TotalPost = data.Count();
+                return View(data);
+            }
+            else
+            {
+                return View("Error");
+            }
         }
 
         // GET: Blog/Post/Details/5
@@ -48,15 +59,19 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(p => p.Author)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (post == null)
+            var response = await _httpClient.GetAsync($"https://localhost:5001/api/Post/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                var content = await response.Content.ReadAsStringAsync();
+                var post = JsonConvert.DeserializeObject<Post>(content);
+                return View(post);
+            }
+            else
+            {
+                // Handle error
+                return View("Error");
             }
 
-            return View(post);
         }
 
         // GET: Blog/Post/Create

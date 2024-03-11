@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using VngBlog.Domain.Abstractions;
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace VngBlog.Domain.Entities.Systems
 {
@@ -10,12 +11,13 @@ namespace VngBlog.Domain.Entities.Systems
     public class Category : EntityAuditBase<int>
     {
         [MaxLength(250)]
-        public required string Name { set; get; }
+        public string Name { set; get; }
         public string? Slug { set; get; }
         [DisplayName("CategoryParent")]
         public int? ParentId { set; get; }
         public bool IsActive { set; get; }
         [ForeignKey(nameof(ParentId))]
+        [JsonIgnore]
         public virtual Category? CategoryParent { get; set; }
         // Các Category con
         public ICollection<Category>? CategoryChildren { get; set; }

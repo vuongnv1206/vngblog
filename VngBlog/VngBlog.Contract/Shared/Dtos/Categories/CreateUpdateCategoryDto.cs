@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace VngBlog.Contract.Shared.Dtos.Categories
 {
-    public class CreateUpdatePostCategoryDto
+    public class CreateUpdateCategoryDto
     {
         [MaxLength(250)]
-        public required string Name { set; get; }
-        public required string Slug { set; get; }
+        public string Name { set; get; }
+        public string Slug { set; get; }
         public int? ParentId { set; get; }
         public bool IsActive { set; get; }
     }

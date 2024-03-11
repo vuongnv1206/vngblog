@@ -3,7 +3,7 @@ using VngBlog.Contract.Shared.Dtos.Categories;
 using VngBlog.Contract.Shared.Dtos.Posts;
 using VngBlog.Domain.Entities.Systems;
 
-namespace VngBLog.Application.Common.Mappings
+namespace VngBlog.WebApp.Mappings
 {
     public class ProfileMapping : Profile
     {
@@ -15,9 +15,9 @@ namespace VngBLog.Application.Common.Mappings
 
 
             CreateMap<CreateUpdateCategoryDto, Category>().ReverseMap();
-           
 
-     
+
+
         }
     }
 }
