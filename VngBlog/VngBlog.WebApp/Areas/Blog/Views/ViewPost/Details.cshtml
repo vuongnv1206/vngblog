@@ -48,7 +48,7 @@
     <strong>Tags:</strong>
     @foreach (var tag in ViewBag.tags)
     {
-        <span class="badge badge-primary">@tag.Name</span>
+        <a href="@Url.Action("PostByTag", "ViewPost", new { tagSlug = tag.Slug })" class="badge badge-primary">@tag.Name</a>
     }
 </div>
 

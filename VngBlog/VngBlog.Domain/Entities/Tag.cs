@@ -6,7 +6,8 @@ namespace VngBlog.Domain.Entities.Systems
 {
     public class Tag : EntityBase<int>
     {
-        public required string Name { get; set; }
+        public string Name { get; set; }
+        public string Slug { get; set; }
         public virtual ICollection<PostTag> PostTags { get; set; }
 
     }

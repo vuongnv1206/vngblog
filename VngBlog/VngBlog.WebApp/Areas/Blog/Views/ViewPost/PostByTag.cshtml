@@ -54,12 +54,11 @@ else
     <p>Không có bài viết nào với tag này.</p>
 }
 
-@section Sidebar {
-    @await Component.InvokeAsync("VngBlog.WebApp.Components.CategorySidebar",
-                        new CategorySidebar.CategorySidebarData()
-                {
-                    Categories = null, // Không cần hiển thị sidebar danh mục khi xem theo tag
-                    Level = 0,
-                    CategorySlug = null
-                })
-}
+
+<div>
+    <strong>Other Tags :</strong>
+    @foreach (var ramdomTag in ViewBag.randomTags)
+    {
+        <a href="@Url.Action("PostByTag", "ViewPost", new { tagSlug = ramdomTag.Slug })" class="badge badge-primary">@ramdomTag.Name</a>
+    }
+</div>

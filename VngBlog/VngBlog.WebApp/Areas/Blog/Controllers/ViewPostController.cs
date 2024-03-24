@@ -110,18 +110,25 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
         }
 
 
-        [Route("/post/tag/{tagName?}")]
-        public IActionResult PostsByTag(string tagName)
+        [Route("/post/tag/{tagSlug?}")]
+        public IActionResult PostByTag(string tagSlug)
         {
+            var categories = GetCategories();
+            ViewBag.categories = categories;
+
             var tags = _context.Tags.ToList();
             ViewBag.tags = tags;
-            ViewBag.tagName = tagName;
+            ViewBag.tagSlug = tagSlug;
+
+            var randomTags = GetRandomTags(tags, 5);
+
+            ViewBag.randomTags = randomTags;
 
             Tag tag = null;
 
-            if (!string.IsNullOrEmpty(tagName))
+            if (!string.IsNullOrEmpty(tagSlug))
             {
-                tag = _context.Tags.FirstOrDefault(t => t.Name == tagName);
+                tag = _context.Tags.FirstOrDefault(t => t.Slug == tagSlug);
 
                 if (tag == null)
                 {
@@ -147,9 +154,41 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
             ViewBag.totalPosts = posts.Count();
             ViewBag.tag = tag;
 
-            return View("PostsByTag", posts.ToList());
+            return View("PostByTag", posts.ToList());
         }
 
+        public List<Tag> GetRandomTags(List<Tag> allTags, int count)
+        {
+            // Kiểm tra xem danh sách các tag có đủ số lượng không
+            if (allTags.Count <= count)
+            {
+                return allTags;
+            }
+
+            // Sử dụng một đối tượng Random để chọn ngẫu nhiên các tag
+            Random random = new Random();
+
+            // Tạo một danh sách mới để lưu trữ các tag ngẫu nhiên
+            List<Tag> randomTags = new List<Tag>();
+
+            // Sử dụng một HashSet để đảm bảo rằng các tag không trùng lặp
+            HashSet<int> indexes = new HashSet<int>();
+
+            // Lặp để chọn ngẫu nhiên các tag
+            while (randomTags.Count < count)
+            {
+                int index = random.Next(0, allTags.Count);
+
+                // Kiểm tra xem index đã được sử dụng trước đó chưa
+                if (!indexes.Contains(index))
+                {
+                    randomTags.Add(allTags[index]);
+                    indexes.Add(index);
+                }
+            }
+
+            return randomTags;
+        }
 
 
     }

@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using VngBlog.Contract.Shared.Dtos.Posts;
 using VngBlog.Domain.Entities.Systems;
 using VngBlog.Infrastructure.EntityFrameworkCore;
+using VngBlog.WebApp.Helpers;
 
 namespace VngBlog.WebApp.Areas.Blog.Controllers
 {
@@ -58,7 +60,7 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Id")] Tag tag)
         {
-
+                tag.Slug = SlugHelper.GenerateSlug(tag.Name);
                 _context.Add(tag);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
