@@ -41,8 +41,17 @@
     <hr>
 
     @Html.Raw(Model.Content)
-
+    
 </div>
+
+<div>
+    <strong>Tags:</strong>
+    @foreach (var tag in ViewBag.tags)
+    {
+        <span class="badge badge-primary">@tag.Name</span>
+    }
+</div>
+
 
 
 

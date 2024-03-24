@@ -88,6 +88,14 @@
     </script>
 
     <script>
+        $("#TagIds").multipleSelect({
+            selectAll: false,
+            keepOpen: false,
+            isOpen: false,
+        });
+    </script>
+
+    <script>
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     </script>
     <partial name="_ValidationScriptsPartial" />

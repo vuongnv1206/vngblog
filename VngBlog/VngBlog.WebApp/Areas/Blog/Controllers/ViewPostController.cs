@@ -87,6 +87,8 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                                .Include(p => p.Author)
                                .Include(p => p.PostCategories)
                                .ThenInclude(pc => pc.Category)
+                               .Include(p=> p.PostTags)
+                               .ThenInclude(pt => pt.Tag)
                                .FirstOrDefault();
 
             if (post == null)
@@ -102,9 +104,53 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                                             .OrderByDescending(p => p.CreatedTime)
                                             .Take(5);
             ViewBag.otherPosts = otherPosts;
-
+            var tags = post.PostTags.Select(pt => pt.Tag).ToList();
+            ViewBag.tags = tags;
             return View(post);
         }
+
+
+        [Route("/post/tag/{tagName?}")]
+        public IActionResult PostsByTag(string tagName)
+        {
+            var tags = _context.Tags.ToList();
+            ViewBag.tags = tags;
+            ViewBag.tagName = tagName;
+
+            Tag tag = null;
+
+            if (!string.IsNullOrEmpty(tagName))
+            {
+                tag = _context.Tags.FirstOrDefault(t => t.Name == tagName);
+
+                if (tag == null)
+                {
+                    return NotFound("Không thấy tag");
+                }
+            }
+
+            var posts = _context.Posts
+                                .Include(p => p.Author)
+                                .Include(p => p.PostTags)
+                                    .ThenInclude(pt => pt.Tag)
+                                .Include(p => p.PostCategories)
+                                    .ThenInclude(pc => pc.Category)
+                                .AsQueryable();
+
+            posts = posts.OrderByDescending(p => p.CreatedTime);
+
+            if (tag != null)
+            {
+                posts = posts.Where(p => p.PostTags.Any(pt => pt.TagId == tag.Id));
+            }
+
+            ViewBag.totalPosts = posts.Count();
+            ViewBag.tag = tag;
+
+            return View("PostsByTag", posts.ToList());
+        }
+
+
 
     }
 }

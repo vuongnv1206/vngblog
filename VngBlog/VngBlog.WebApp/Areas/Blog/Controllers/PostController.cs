@@ -79,8 +79,10 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
         public async Task<IActionResult> CreateAsync()
         {
             var categories = await _context.Categories.ToListAsync();
+            var tags = await _context.Tags.ToListAsync();
 
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Name");
+            ViewData["tags"] = new MultiSelectList(tags, "Id", "Name");
 
             return View();
         }
@@ -91,7 +93,10 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
         {
 
             var categories = await _context.Categories.ToListAsync();
+            var tags = await _context.Tags.ToListAsync();
+
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Name");
+            ViewData["tags"] = new MultiSelectList(tags, "Id", "Name");
 
             if (postDto.Slug == null)
             {
@@ -153,7 +158,7 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
             }
 
             //var post = await _context.Posts.FindAsync(id);
-            var post = await _context.Posts.Include(p => p.PostCategories).FirstOrDefaultAsync(p => p.Id == id);
+            var post = await _context.Posts.Include(p => p.PostCategories).Include(x => x.PostTags).FirstOrDefaultAsync(p => p.Id == id);
 
             if (post == null)
             {
@@ -173,7 +178,9 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                 Description = post.Description,
                 Slug = post.Slug,
                 Status = PostStatus.WaitingForApproval,
-                CategoryIds = post.PostCategories.Select(pc => pc.CategoryId).ToArray()
+                CategoryIds = post.PostCategories.Select(pc => pc.CategoryId).ToArray(),
+                TagIds = post.PostTags.Select(pc => pc.TagId).ToArray(),
+
             };
 
             var categories = await _context.Categories.ToListAsync();

@@ -1,0 +1,65 @@
+﻿@model List<Post>
+@using VngBlog.Domain.Entities.Systems
+@using VngBlog.WebApp.Components
+@{
+    List<Tag> tags = ViewBag.tags as List<Tag>;
+    Tag tag = ViewBag.tag as Tag;
+    ViewData["Title"] = (tag != null) ? "Bài viết với tag: " + tag.Name :
+                        "Tất cả các bài viết";
+}
+
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="~/">Home</a></li>
+        @if (tag != null)
+        {
+            <li class="breadcrumb-item">Bài viết với tag: @tag.Name</li>
+        }
+    </ol>
+</nav>
+
+<h1>@ViewData["Title"]</h1>
+<hr>
+
+@if (Model.Any())
+{
+    @foreach (var post in Model)
+    {
+        <div class="media border-bottom mb-3 pb-3">
+            <img src="/contents/nophoto.png" class="mr-3 w-25">
+            <div class="media-body">
+                <h5 class="mt-0">
+                    <a asp-controller="ViewPost" asp-action="Details" asp-route-postslug="@post.Slug">
+                        @post.Name
+                    </a>
+                </h5>
+                @post.Description
+                <div>
+                    Chủ đề:
+                    <strong class="text-danger">
+                        @post.PostCategories.FirstOrDefault()?.Category.Name
+                    </strong>
+                </div>
+                <div class="author-row">
+                    Tác giả: <strong>@post.Author.UserName</strong> |
+                    Ngày cập nhật : <i>@post.LastModifiedTime.Value.ToString("dd/MM/yyyy")</i>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p>Không có bài viết nào với tag này.</p>
+}
+
+@section Sidebar {
+    @await Component.InvokeAsync("VngBlog.WebApp.Components.CategorySidebar",
+                        new CategorySidebar.CategorySidebarData()
+                {
+                    Categories = null, // Không cần hiển thị sidebar danh mục khi xem theo tag
+                    Level = 0,
+                    CategorySlug = null
+                })
+}
