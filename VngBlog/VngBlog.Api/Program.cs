@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+
 using VngBlog.Api;
 using VngBlog.Api.Middlewares;
 using VngBlog.Application;
@@ -25,6 +25,9 @@ builder.Services.AddSwaggerGen();
 //            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 //        });
 
+
+builder.Services.AddControllers().AddNewtonsoftJson(x =>
+ x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",

@@ -16,7 +16,7 @@ namespace VngBlog.Domain.Entities.Systems
         [DisplayName("Author")]
         public string? AuthorId { get; set; }
         [ForeignKey(nameof(AuthorId))]
-        [JsonIgnore]
+    
         public virtual AppUser? Author { get; set; }
         public string? Image { get; set; }
         public string? Content { get; set; }

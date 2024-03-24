@@ -1,9 +1,11 @@
-﻿@model VngBlog.WebApp.Areas.Blog.Models.CreatePostModel
+﻿@using VngBlog.Contract.Shared.Dtos.Posts
+@model CreateUpdatePostDto
 
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var list = ViewData["categories"] as MultiSelectList;
+    var listTag = ViewData["tags"] as MultiSelectList;
 }
 
 <h1>Create</h1>
@@ -18,6 +20,11 @@
                 <label asp-for="CategoryIds" class="control-label"></label>
                 <select asp-for="CategoryIds" multiple="multiple" asp-items="list" class="w-100"></select>
                 <span asp-validation-for="CategoryIds" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TagIds" class="control-label"></label>
+                <select asp-for="TagIds" multiple="multiple" asp-items="listTag" class="w-100"></select>
+                <span asp-validation-for="TagIds" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>

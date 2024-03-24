@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using VngBlog.Contract.Shared.Dtos.Posts;
 using VngBlog.Domain.Entities;
 using VngBlog.Domain.Entities.Systems;
 using VngBlog.Infrastructure.EntityFrameworkCore;
@@ -85,38 +86,36 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
         }
 
         // POST: Blog/Post/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Slug,Description,Image,Content,Source,Note,CategoryIds")] CreatePostModel post)
+        public async Task<IActionResult> Create([Bind("Name,Slug,Description,Image,Content,Source,Note,CategoryIds,TagIds")] CreateUpdatePostDto postDto)
         {
 
             var categories = await _context.Categories.ToListAsync();
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Name");
 
-            if (post.Slug == null)
+            if (postDto.Slug == null)
             {
-                post.Slug = SlugHelper.GenerateSlug(post.Name);
+                postDto.Slug = SlugHelper.GenerateSlug(postDto.Name);
             }
 
-            if (await _context.Posts.AnyAsync(p => p.Slug == post.Slug))
+            if (await _context.Posts.AnyAsync(p => p.Slug == postDto.Slug))
             {
                 ModelState.AddModelError("Slug", "Nhập chuỗi Url khác");
-                return View(post);
+                return View(postDto);
             }
 
 
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(this.User);
+                var post = _mapper.Map<Post>(postDto);
                 post.AuthorId = user.Id;
                 post.Status = PostStatus.Published;
                 _context.Add(post);
 
-                if (post.CategoryIds != null)
+                if (postDto.CategoryIds != null)
                 {
-                    foreach (var CateId in post.CategoryIds)
+                    foreach (var CateId in postDto.CategoryIds)
                     {
                         _context.Add(new PostCategory()
                         {
@@ -126,11 +125,23 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                     }
                 }
 
+                if (postDto.TagIds != null)
+                {
+                    foreach (var tagId in postDto.TagIds)
+                    {
+                        _context.Add(new PostTag()
+                        {
+                            TagId = tagId,
+                            Post = post
+                        });
+                    }
+                }
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
            
-            return View(post);
+            return View(postDto);
         }
 
         // GET: Blog/Post/Edit/5
@@ -166,23 +177,27 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
             };
 
             var categories = await _context.Categories.ToListAsync();
+            var tags = await _context.Tags.ToListAsync();
+
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Name");
+            ViewData["tags"] = new MultiSelectList(tags, "Id", "Name");
             return View(postEdit);
         }
 
         // POST: Blog/Post/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Name,Slug,Description,Image,Content,Source,Note,Id,CategoryIds")] CreatePostModel post)
+        public async Task<IActionResult> Edit(int id, [Bind("Name,Slug,Description,Image,Content,Source,Note,Id,CategoryIds,TagIds")] CreatePostModel post)
         {
             if (id != post.Id)
             {
                 return NotFound();
             }
             var categories = await _context.Categories.ToListAsync();
+            var tags = await _context.Tags.ToListAsync();
+
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Name");
+            ViewData["tags"] = new MultiSelectList(tags, "Id", "Name");
 
             if (post.Slug == null)
             {
@@ -239,6 +254,33 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
                         });
                     }
 
+                    // Update PostTags
+                    if (post.TagIds == null) post.TagIds = new int[] { };
+
+                    var oldTagIds = postUpdate.PostTags.Select(c => c.TagId).ToArray();
+                    var newTagIds = post.TagIds;
+
+                    var removeTagPosts = from postTag in postUpdate.PostTags
+                                          where (!newTagIds.Contains(postTag.TagId))
+                                          select postTag;
+                    _context.PostTags.RemoveRange(removeTagPosts);
+
+                    var addTagIds = from TagId in newTagIds
+                                    where !oldTagIds.Contains(TagId)
+                                     select TagId;
+
+                    foreach (var TagId in addTagIds)
+                    {
+                        _context.PostTags.Add(new PostTag()
+                        {
+                            PostId = id,
+                            TagId = TagId
+                        });
+                    }
+
+
+
+
                     _context.Update(postUpdate);
 
                     await _context.SaveChangesAsync();
@@ -284,14 +326,17 @@ namespace VngBlog.WebApp.Areas.Blog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var post = await _context.Posts.FindAsync(id);
-            if (post != null)
-            {
-                _context.Posts.Remove(post);
-            }
+            var response = await _httpClient.DeleteAsync($"https://localhost:5001/api/Post/{id}");
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                // Handle error
+                return View("Error");
+            }
         }
 
         private bool PostExists(int id)
